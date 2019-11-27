@@ -28,12 +28,16 @@ class TSPSolver:
             gbest = self.updateGBest(gbest)
         
         self.solution = gbest[0].values
-        print(gbest[1], self.iteration)
+        print(gbest[1], self.iteration, self.solution)
     
     def updateGBest(self, gbestValue):
         gbest = gbestValue
         for p in self.swarm:
-            if p.pbest[1] > gbest[1]:
+            if p.pbest[1] < gbest[1]:
                 gbest = (p.pbest[0],p.pbest[1])
         
         return gbest
+
+a = TSPSolver(5)
+a.solve()
+

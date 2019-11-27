@@ -3,25 +3,43 @@ import random
 
 # Receive a state and return the number
 # of non-attacking pairs of queens
-def fitness(state):
-    indexes = [c for c in range(len(state))]
-    pairs = list(combinations(indexes,2))
+# def fitness(state):
+#     indexes = [c for c in range(len(state))]
+#     pairs = list(combinations(indexes,2))
     
-    def isNonAttackingPair(pair):
-        i,j = pair
-        if state[i] == state[j]:
-            return False
-        dcol = abs(i-j)
-        drow = abs(state[i] - state[j])
-        if dcol == drow:
-            return False
-        return True
+#     def isNonAttackingPair(pair):
+#         i,j = pair
+#         if state[i] == state[j]:
+#             return False
+#         dcol = abs(i-j)
+#         drow = abs(state[i] - state[j])
+#         if dcol == drow:
+#             return False
+#         return True
     
-    score = 0
-    for pair in pairs:
-        score = score + 1 if isNonAttackingPair(pair) else score
+#     score = 0
+#     for pair in pairs:
+#         score = score + 1 if isNonAttackingPair(pair) else score
 
-    return score
+#     return score
+
+positions = {
+    1: (0,0),
+    2: (1,0),
+    3: (1,1),
+    4: (0.5, 2),
+    5: (0,1),
+}
+
+def fitness(state):
+    total = 0
+    for i in range(len(state)-1):
+        a = state[i+1]
+        b = state[i]
+        dist = (positions[a][0] - positions[b][0])**2 + (positions[a][1] - positions[b][1])**2
+        total += dist 
+    dist = (positions[state[0]][0] - positions[state[-1]][0])**2 + (positions[state[0]][1] - positions[state[-1]][1])**2
+    return total
 
 # Return a list with random numbers
 # between 1 and 8 inclusive representing
@@ -44,7 +62,7 @@ def generateRandomPosition(N):
     return position
 
 def generateRandomSwap(N):
-    numOfSwaps = random.randint(1,5)
+    numOfSwaps = random.randint(1,N//2)
     swaps = []
     for _ in range(numOfSwaps):
         i = random.randint(0,N-1)

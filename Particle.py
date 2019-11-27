@@ -1,4 +1,6 @@
 from utils import fitness, generateRandomPosition, generateRandomSwap
+from DiscreteDimension import Position, Velocity
+import random
 
 class Particle:
     def __init__(self, N):
@@ -23,5 +25,5 @@ class Particle:
         self.velocity = inertiaFactor + cognitiveFactor + socialFactor
         self.position = self.position + self.velocity
 
-        if fitness(self.position.values) > self.pbest[1]:
+        if fitness(self.position.values) < self.pbest[1]:
             self.pbest = (self.position, fitness(self.position.values))
