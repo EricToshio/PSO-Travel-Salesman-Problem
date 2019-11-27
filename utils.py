@@ -23,22 +23,18 @@ import random
 
 #     return score
 
-positions = {
-    1: (0,0),
-    2: (1,0),
-    3: (1,1),
-    4: (0.5, 2),
-    5: (0,1),
-}
+from cidades import cities
 
 def fitness(state):
     total = 0
     for i in range(len(state)-1):
-        a = state[i+1]
-        b = state[i]
-        dist = (positions[a][0] - positions[b][0])**2 + (positions[a][1] - positions[b][1])**2
+        a = state[i+1] - 1
+        b = state[i] - 1
+        cityPosition1 = cities[a][1]
+        cityPosition2 = cities[b][1]
+        dist = (cityPosition1[0] - cityPosition2[0])**2 + (cityPosition1[1] - cityPosition2[1])**2
         total += dist 
-    dist = (positions[state[0]][0] - positions[state[-1]][0])**2 + (positions[state[0]][1] - positions[state[-1]][1])**2
+    # dist = (positions[state[0]][0] - positions[state[-1]][0])**2 + (positions[state[0]][1] - positions[state[-1]][1])**2
     return total
 
 # Return a list with random numbers

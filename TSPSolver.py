@@ -37,7 +37,10 @@ class TSPSolver:
                 gbest = (p.pbest[0],p.pbest[1])
         
         return gbest
+    
+    def getSolution(self):
+        return self.solution
 
-a = TSPSolver(5)
-a.solve()
+# a = TSPSolver(5)
+# a.solve()
 
