@@ -89,42 +89,40 @@ class DiscreteDimension(ABC):
 
 
 class Position(DiscreteDimension):
-    def __init__(self):
+    def __init__(self, values):
         DiscreteDimension.__init__(self)
         self.type = 'position'
-        self.values = []
+        self.values = values
 
 class Velocity(DiscreteDimension):
-    def __init__(self):
+    def __init__(self, values):
         DiscreteDimension.__init__(self)
         self.type = 'velocity'
-        self.values = []
+        self.values = values
 
 
 class Particle:
     def __init__(self, id, data):
         self.id = id
-        self.N = data.nOfParticles
-        self.position = Position()
-        self.position.values = data.position
-        self.velocity = Velocity()
-        self.velocity.values = data.velocity
-        self.pbest = (data.pbest, data.pbest_fitness)
-        self.gbest = data.gbest
-        self.gbest_fitness = data.gbest_fitness
+        self.N = data["nOfParticles"]
+        self.position = data["position"]
+        self.velocity = data["velocity"]
+        self.pbest = (data["pbest"], data["pbest_fitness"])
+        self.gbest = data["gbest"]
+        self.gbest_fitness = data["gbest_fitness"]
 
         self.omega = 0.7
         self.alfa = 1.2
         self.beta = 2.3
     
-    def update(self, gbest):
+    def update(self):
         self.r1 = random.uniform(0,1)
         self.r2 = random.uniform(0,1)
         
         inertiaFactor = self.omega*self.velocity
         cognitiveFactor = self.alfa*self.r1*(self.pbest[0] - self.position)
-        socialFactor = self.beta*self.r2*(self.gbest_particle - self.position)
-        
+        socialFactor = self.beta*self.r2*(self.gbest - self.position)
+
         self.velocity = inertiaFactor + cognitiveFactor + socialFactor
         self.position = self.position + self.velocity
 
@@ -133,23 +131,23 @@ class Particle:
     
     def make_message(self):
         a = str(-1)
-        b = str(self.position)
-        c = str(self.velocity)
-        d = str(self.fitness)
-        e = str(self.pbest_particle)
-        f = str(self.pbest_fitness)
-        g = str(self.gbest_particle)
+        b = str(self.position.values)
+        c = str(self.velocity.values)
+        d = str(fitness(self.position.values))
+        e = str(self.pbest[0].values)
+        f = str(self.pbest[1])
+        g = str(self.gbest.values)
         h = str(self.gbest_fitness)
         return ':'.join([a,b,c,d,e,f,g,h])
     
     def getParticleInfo(self):
         a = str(self.id)
-        b = str(self.position)
-        c = str(self.velocity)
-        d = str(self.fitness)
-        e = str(self.pbest_particle)
-        f = str(self.pbest_fitness)
-        g = str(self.gbest_particle)
+        b = str(self.position.values)
+        c = str(self.velocity.values)
+        d = str(fitness(self.position.values))
+        e = str(self.pbest[0].values)
+        f = str(self.pbest[1])
+        g = str(self.gbest.values)
         h = str(self.gbest_fitness)
         return ':'.join([a,b,c,d,e,f,g,h])
         
@@ -158,39 +156,37 @@ def parseData(data):
     nOfParticles, position, velocity, fitness, pbest_particle, pbest_fitness, gbest_particle, gbest_fitness = data.split(':')
 
     return {
-        nOfParticles: int(nOfParticles),
-        position: Position(position),
-        velocity: Velocity(velocity),
-        fitness: float(fitness),
-        pbest: Position(pbest_particle),
-        pbest_fitness: float(fitness),
-        gbest: Position(gbest_particle),
-        gbest_fitness: float(gbest_fitness),
+        "nOfParticles": int(nOfParticles),
+        "position": Position(eval(position)),
+        "velocity": Velocity(eval(velocity)),
+        "fitness": float(fitness),
+        "pbest": Position(eval(pbest_particle)),
+        "pbest_fitness": float(fitness),
+        "gbest": Position(eval(gbest_particle)),
+        "gbest_fitness": float(gbest_fitness),
     }
 
 
 def mapper(mapperInput):
-    # verificar se mapperInput eh string
     id, stringfiedData = eval(mapperInput)
     
-    
     # parse data
-    data = parseData(id, stringfiedData)
+    data = parseData(stringfiedData)
 
     # update particle velocity
-    particleObj = Particle(data)
+    particleObj = Particle(id, data)
     particleObj.update()
 
-    message = particle.make_message()
+    message = particleObj.make_message()
     emits = []
-    for i in range(data.nOfParticles):
+    for i in range(data["nOfParticles"]):
         if i != id:
             emits.append((i, message))
     
-    newParticleInfo = particle.getParticleInfo()
+    newParticleInfo = particleObj.getParticleInfo()
 
     emits.append((id, newParticleInfo))
     return emits
 
-
-
+# teste = nOfParticles, position, velocity, fitness, pbest_particle, pbest_fitness, gbest_particle, gbest_fitness
+# (1,'4:[1,2,3,4]:[(1,2)]:2:[1,2,3,4]:2:[1,2,3,4]:2')
