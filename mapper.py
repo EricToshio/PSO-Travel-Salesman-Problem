@@ -190,3 +190,37 @@ def mapper(mapperInput):
 
 # teste = nOfParticles, position, velocity, fitness, pbest_particle, pbest_fitness, gbest_particle, gbest_fitness
 # (1,'4:[1,2,3,4]:[(1,2)]:2:[1,2,3,4]:2:[1,2,3,4]:2')
+##################################################################################################
+
+def ParticleUpdateGBest(data, new_gbest, new_gbest_fitness):
+    a = str(data["id"])
+    b = str(data["position"])
+    c = str(data["velocity"])
+    d = str(data["fitness"])
+    e = str(data["pbest_particle"])
+    f = str(data["pbest_fitness"])
+    g = str(new_gbest)
+    h = str(new_gbest_fitness)
+    return ':'.join([a,b,c,d,e,f,g,h])
+
+
+def reducer(value1,value2):
+    # Parser dos values
+    data1 = parseData(value1)
+    data2 = parseData(value2)
+
+    # Quando value1 eh mensagem, 
+    # considere o value2 como particula
+    if data1["nOfParticles"] == -1:
+        # Verifica se o global do value1 e melhor
+        if data1["gbest_fitness"] > data2["gbest_fitness"]:
+            return ParticleUpdateGBest(data2, data1["gbest"], data1["gbest_fitness"])
+        else:
+            return value2
+    # Quando value1 eh particula
+    else:
+        # Verifica se o global do value2 e melhor
+        if data2["gbest_fitness"] > data1["gbest_fitness"]:
+            return ParticleUpdateGBest(data1, data2["gbest"], data2["gbest_fitness"])
+        else:
+            return value1
