@@ -1,0 +1,2 @@
+#!/bin/bash
+gcloud dataproc clusters create cluster-name --bucket bucket-name --region us-central1 --subnet default --zone us-central1-a --master-machine-type n1-standard-1 --master-boot-disk-size 30 --num-workers 4 --worker-machine-type n1-standard-1 --worker-boot-disk-size 30 --image-version 1.3-deb9 --project project-name --initialization-actions 'gs://dataproc-initialization-actions/jupyter/jupyter.sh'
